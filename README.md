@@ -31,9 +31,16 @@ This example shows how to use the USB Stack Library inside of MPLAB&reg; Code Co
 
 ## Setup
 
-With the power off, plug in the 2x2 Click into Slot 1. Place the AVR64DU32 Curiosity Nano into the slot, with the programmer USB facing outwards, as shown in the image below.  
+With the power off, plug in the 2x2 Click into Slot 1. Place the AVR64DU32 Curiosity Nano into the slot, with the programmer USB on the left edge, as shown in the image below.  
 
 ![Image of the Click Boards](./images/boardSetup.JPG)  
+
+### UART Settings (Debug)
+
+- Baud Rate: 9600
+- Char Length: 8-bits
+- Parity: None
+- Stop Bits: 1 bit
 
 ### I/O Usage
 
@@ -74,9 +81,15 @@ In the `APPLICATION_USB_INIT` state, events from the USB host are handled by cal
 
 ### Key Handling
 
-Every 5 ms, the buttons are polled to see if they are pressed. If a button is pressed, the MCU  
+A simple state machine is called every 5 ms to handle key presses in this application. The 5 ms delay is used to debounce the SW0 input. 
 
-### Operation
+- On POR, the state machine starts in the `NOT_PRESSED` state. Every 5 ms, the buttons are polled to see if they are pressed. If a button is pressed, key down event(s) are loaded into a report and queued for send. The key press state machine advances to the `PRESSED` state. 
+
+- In the `PRESSED` state, the application clears the key down events and queues the now empty report for send. This is required, as the computer will assume the button is pressed until told otherwise. The state machine advances to the `HELD_WAIT` state after queueing the data. 
+
+- The application waits in `HELD_WAIT` state until all of the keys are released. Once the keys are all released, the state machine returns to the `NOT_PRESSED` state.
+
+## Operation
 
 The buttons of the 2x2 Click perform the following actions:
 
@@ -88,11 +101,9 @@ The buttons of the 2x2 Click perform the following actions:
 | 4 | CTRL + X | Cut
 | SW0 | "AVR DU" | Prints the string "AVR DU"
 
-**Note**: SW0 is located on the Curiosity Nano.
+**Note 1**: SW0 is located on the Curiosity Nano.
 
-Every 5 ms, the Real Time Clock (RTC) inside the MCU is used to poll the state of the buttons. This effectively debounces the inputs, although the 2x2 Click debounces the buttons automatically. 
-
-**Note**: The 2x2 Click debouncing causes the buttons to be held for an extra ~0.5s. The code is designed with a one-shot to prevent this from causing issues, however quickly switching buttons or tapping is not possible.
+**Note 2**: The 2x2 Click debouncing causes the buttons to be held for an extra ~0.5s. The code is designed with a one-shot to prevent this from causing issues, however quickly switching buttons or tapping is not possible.
 
 ## Summary
 This example has shown the AVR64DU32 family of MCUs as a USB Keypad.  

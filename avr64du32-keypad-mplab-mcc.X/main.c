@@ -71,157 +71,180 @@ static volatile bool shouldSendKeyEvent = false;
 static volatile APPLICATION_KEY_STATE keyStates[USB_HID_KEYBOARD_REPORT_KEYNUM] = 
 { NOT_PRESSED, NOT_PRESSED, NOT_PRESSED, NOT_PRESSED, NOT_PRESSED, NOT_PRESSED};
 
+static volatile APPLICATION_KEY_STATE state = NOT_PRESSED;
+
 //USB Keyboard Report
 static volatile USB_KEYBOARD_REPORT_DATA_t keyReport;
 
 void onRTC_Overflow(void)
 {
-    //SW0 on Nano
-    if ((keyStates[SW0_INDEX] == NOT_PRESSED) && (SW0_GetValue()))
+    switch (state)
     {
-        //Key has been pressed since last time
-        keyStates[SW0_INDEX] = PRESSED;
-        
-        //Print Text
-        KeyReport_registerKeyDown(&keyReport, 'A');
-        KeyReport_registerKeyDown(&keyReport, 'V');
-        KeyReport_registerKeyDown(&keyReport, 'R');
-        KeyReport_registerKeyDown(&keyReport, ' ');
-        KeyReport_registerKeyDown(&keyReport, 'D');
-        KeyReport_registerKeyDown(&keyReport, 'U');
-        
-        shouldSendKeyEvent = true;
-    } 
-    else if ((keyStates[SW0_INDEX] == PRESSED) && (!SW0_GetValue()))
-    {
-        //Key was released
-        keyStates[SW0_INDEX] = NOT_PRESSED;
-        
-        //Print Text
-        KeyReport_registerKeyUp(&keyReport, 'A');
-        KeyReport_registerKeyUp(&keyReport, 'V');
-        KeyReport_registerKeyUp(&keyReport, 'R');
-        KeyReport_registerKeyUp(&keyReport, ' ');
-        KeyReport_registerKeyUp(&keyReport, 'D');
-        KeyReport_registerKeyUp(&keyReport, 'U');
-        
-        keyReport.Modifier = HID_MODIFIER_NONE;
-        keyReport.KeyCode[0] = HID_KEY_NONE;
-
-        shouldSendKeyEvent = true;
-    }
-    else
-    {
-        //Other keys
-        
-        if (keyStates[1] == NOT_PRESSED)
+        case NOT_PRESSED:
         {
-            if (BUTTON_1_GetValue())
+            //Assume a key was pressed (variable cleared if not pressed)
+            shouldSendKeyEvent = true;
+            
+            if (SW0_GetValue())
             {
-                //CTRL+C
-                keyStates[1] = PRESSED;
-                
-                keyReport.Modifier = HID_MODIFIER_LEFT_CTRL;
-                keyReport.KeyCode[1] = HID_C;
-
-                shouldSendKeyEvent = true;
+                //SW0 - Print "AVR DU"
+                KeyReport_addKeyDownEventFromChar(&keyReport, 'A');
+                KeyReport_addKeyDownEventFromChar(&keyReport, 'V');
+                KeyReport_addKeyDownEventFromChar(&keyReport, 'R');
+                KeyReport_addKeyDownEventFromChar(&keyReport, ' ');
+                KeyReport_addKeyDownEventFromChar(&keyReport, 'D');
+                KeyReport_addKeyDownEventFromChar(&keyReport, 'U');
+            }
+            else if (BUTTON_1_GetValue())
+            {
+                //BUTTON1 - CTRL + C
+                KeyReport_addKeyDownEvent(&keyReport, HID_MODIFIER_LEFT_CTRL, HID_C);
             }
             else if (BUTTON_2_GetValue())
             {
-                //CTRL+V
-                keyStates[1] = PRESSED;
-                
-                keyReport.Modifier = HID_MODIFIER_LEFT_CTRL;
-                keyReport.KeyCode[1] = HID_V;
-
-                shouldSendKeyEvent = true;
+                //BUTTON2 - CTRL + V
+                KeyReport_addKeyDownEvent(&keyReport, HID_MODIFIER_LEFT_CTRL, HID_V);
             }
             else if (BUTTON_3_GetValue())
             {
-                //CTRL+Z
-                keyStates[1] = PRESSED;
-                
-                keyReport.Modifier = HID_MODIFIER_LEFT_CTRL;
-                keyReport.KeyCode[1] = HID_Z;
-
-                shouldSendKeyEvent = true;
+                //BUTTON3 - CTRL + Z
+                KeyReport_addKeyDownEvent(&keyReport, HID_MODIFIER_LEFT_CTRL, HID_Z);
             }
             else if (BUTTON_4_GetValue())
             {
-                //CTRL+X
-                keyStates[1] = PRESSED;
-                
-                keyReport.Modifier = HID_MODIFIER_LEFT_CTRL;
-                keyReport.KeyCode[1] = HID_X;    
-
-                shouldSendKeyEvent = true;
+                //BUTTON4 - CTRL + X
+                KeyReport_addKeyDownEvent(&keyReport, HID_MODIFIER_LEFT_CTRL, HID_X);
             }
-        }
-        else if (keyStates[1] == PRESSED)
-        {
-            keyStates[1] = HELD_WAIT;
-                
-            keyReport.Modifier = HID_MODIFIER_NONE;
-            keyReport.KeyCode[1] = HID_KEY_NONE;    
-
-            shouldSendKeyEvent = true;
-        }
-        else
-        {
-            if ((!BUTTON_1_GetValue()) && (!BUTTON_2_GetValue())
-                    && (!BUTTON_3_GetValue()) && (!BUTTON_4_GetValue()))
+            else
             {
-                keyStates[1] = NOT_PRESSED;
+                //No key was pressed
+                shouldSendKeyEvent = false;
             }
+            
+            //Transition to the PRESSED event
+            if (shouldSendKeyEvent)
+                state = PRESSED;
+            
+            break;
         }
-
-//        //CTRL+C
-//        if ((BUTTON_1_GetValue()) && (keyStates[COPY_BUTTON_INDEX] == NOT_PRESSED))
-//        {
-//            keyStates[COPY_BUTTON_INDEX] = PRESSED;
-//
-//            keyReport.Modifier = HID_MODIFIER_LEFT_CTRL;
-//            keyReport.KeyCode[COPY_BUTTON_INDEX] = HID_C;
-//
-//            shouldSendKeyEvent = true;
-//        }
-//        else if ((!BUTTON_1_GetValue()) && (keyStates[COPY_BUTTON_INDEX] == PRESSED))
-//        {
-//            keyStates[COPY_BUTTON_INDEX] = NOT_PRESSED;
-//
-//            keyReport.Modifier = HID_MODIFIER_NONE;
-//            keyReport.KeyCode[COPY_BUTTON_INDEX] = HID_KEY_NONE;
-//
-//            shouldSendKeyEvent = true;
-//        }
-//
-//        //CTRL+V
-//        if ((BUTTON_2_GetValue()) && (keyStates[PASTE_BUTTON_INDEX] == NOT_PRESSED))
-//        {
-//            keyStates[PASTE_BUTTON_INDEX] = PRESSED;
-//
-//            keyReport.Modifier = HID_MODIFIER_LEFT_CTRL;
-//            keyReport.KeyCode[PASTE_BUTTON_INDEX] = HID_V;
-//
-//            shouldSendKeyEvent = true;
-//        }
-//        else if ((!BUTTON_2_GetValue()) && (keyStates[PASTE_BUTTON_INDEX] == PRESSED))
-//        {
-//            keyStates[PASTE_BUTTON_INDEX] = NOT_PRESSED;
-//
-//            keyReport.Modifier = HID_MODIFIER_NONE;
-//            keyReport.KeyCode[PASTE_BUTTON_INDEX] = HID_KEY_NONE;
-//
-//            shouldSendKeyEvent = true;
-//        }
+        case PRESSED:
+        {
+            //Remove the key down events
+            KeyReport_clearReport(&keyReport);
+            shouldSendKeyEvent = true;
+            
+            //Move to the wait state
+            state = HELD_WAIT;
+            break;
+        }
+        case HELD_WAIT:
+        {
+            //If all buttons are released, reset to NOT_PRESSED
+            if ((!BUTTON_1_GetValue()) && (!BUTTON_2_GetValue())
+                    && (!BUTTON_3_GetValue()) && (!BUTTON_4_GetValue())
+                    && (!SW0_GetValue()))
+            {
+                state = NOT_PRESSED;
+            }
+            break;
+        }
+        default:
+        {
+            //We shouldn't get here
+        }
     }
+}
+
+//Bitmask of USB Report
+#define USB_NUM_LOCK_bm (0b1 << 0)
+#define USB_CAPS_LOCK_bm (0b1 << 1)
+#define USB_SCROLL_LOCK_bm (0b1 << 2)
+#define USB_COMPOSE_bm (0b1 << 3)
+#define USB_KANA_bm (0b1 << 4)
+
+//Handle USB Reports
+void handleUSBReport(uint16_t report)
+{
+    printf("%x\r\n", report);
+    uint8_t reportType = (report >> 8);
     
+    switch (reportType)
+    {
+        case 0:
+        {
+            //Report ID not set
+            //If there is no output endpoint, CAPS LOCK/SCROLL LOCK/NUM LOCK/COMPOSE/KANA are reported here
+            
+            //[7:5] Constants
+            //[4] Kana
+            //[3] Compose
+            //[2] Scroll Lock
+            //[1] Caps Lock
+            //[0] Num Lock
+            
+            LED0_SetLow();
+            
+            uint8_t keyMap = report & 0xFF;
+            
+            if (keyMap & USB_NUM_LOCK_bm)
+            {
+                //Num Lock
+            }
+            
+            if (keyMap & USB_CAPS_LOCK_bm)
+            {
+                //Caps Lock
+                LED0_SetHigh();
+            }
+            
+            if (keyMap & USB_SCROLL_LOCK_bm)
+            {
+                //Scroll Lock
+            }
+            
+            if (keyMap & USB_COMPOSE_bm)
+            {
+                //Compose
+            }
+            
+            if (keyMap & USB_KANA_bm)
+            {
+                //Kana
+            }
+            
+            break;
+        }
+        case 1:
+        {
+            //Input
+            break;
+        }
+        case 2:
+        {
+            //Output
+            break;
+        }
+        case 3:
+        {
+            //Feature
+            break;
+        }
+        default:
+        {
+            
+        }
+    }
+
 }
 
 int main(void)
 {
+    //Setup USB Callback
+    HID_SetReportCallbackRegister(&handleUSBReport);
+    
+    //Init HW Peripherals
     SYSTEM_Initialize();
-        
+    
     //USB Bus State
     APPLICATION_USB_STATE usbState = APPLICATION_USB_NOT_INIT;
     
@@ -250,7 +273,7 @@ int main(void)
                 }
                 else if (retryCount < USB_INIT_RETRIES)
                 {
-                    //Failed to init, STOP USB peripheral, increment count
+                    //Failed to init, stop the USB peripheral, increment count
                     retryCount++;
                     USB_Stop();
                 }

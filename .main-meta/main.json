@@ -4,8 +4,8 @@
     "content": {
         "metaDataVersion": "1.3.0",
         "name": "com.microchip.mcu8.mplabx.project.avr64du32-keypad-mplab-mcc",
-        "version": " ",
-        "displayName": "",
+        "version": "1.0.0",
+        "displayName": "USB Keypad with AVR64DU32",
         "projectName": "avr64du32-keypad-mplab-mcc",
         "shortDescription": "Create a USB Keypad using the AVR DU family of microcontrollers.",
         "ide": {
@@ -19,12 +19,12 @@
             }
         ],
         "dfp": {
-            "name": "",
-            "semverRange": ""
+            "name": "AVR-Dx_DFP",
+            "semverRange": "^2.4.286"
         },
         "configurator": {
-            "name": "",
-            "semverRange": ""
+            "name": "MCC",
+            "semverRange": ">=5.5.0"
         },
         "device": {
             "metaDataVersion": "1.0.0",
@@ -37,8 +37,8 @@
             }
         },
         "author": "Robert Perkel",
-        "peripherals": [],
-        "keywords": [],
+        "peripherals": [ "USB", "RTC", "UART", "CMP" ],
+        "keywords": [ "USB 2.0", "Button", "Communication"],
         "additionalData": {
             "longDescription": {
                 "metaDataVersion": "1.0.0",

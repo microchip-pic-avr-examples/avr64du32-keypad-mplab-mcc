@@ -58,7 +58,7 @@
  * @def STRING_PRODUCT
  * @brief Product String descriptor.
  */
-#define STRING_PRODUCT      L"HID Class Demo"
+#define STRING_PRODUCT      L"AVR DU - Keypad Demo"
 
 /**
  * @ingroup usb_device_stack

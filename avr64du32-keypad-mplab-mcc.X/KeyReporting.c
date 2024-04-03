@@ -2,7 +2,8 @@
 
 
 #include "mcc_generated_files/usb/usb_hid/usb_hid_keyboard.h"
-#include "usb_hid_keycodes.h"
+#include "mcc_generated_files/usb/usb_hid/usb_protocol_hid.h"
+#include "mcc_generated_files/usb/usb_hid/usb_hid_keycodes.h"
 
 //Clear / Initialize a keyReport
 void KeyReport_clearReport(USB_KEYBOARD_REPORT_DATA_t* keyReport)
@@ -176,7 +177,7 @@ uint8_t KeyReport_getKeyIndex(USB_KEYBOARD_REPORT_DATA_t* keyReport, uint8_t hid
 }
 
 //Register a "key down" event for c
-void KeyReport_registerKeyDown(USB_KEYBOARD_REPORT_DATA_t* keyReport, char c)
+void KeyReport_addKeyDownEventFromChar(USB_KEYBOARD_REPORT_DATA_t* keyReport, char c)
 {
     uint8_t key, mod;
     KeyReport_convertCharToCode(c, &key, &mod);
@@ -200,12 +201,51 @@ void KeyReport_registerKeyDown(USB_KEYBOARD_REPORT_DATA_t* keyReport, char c)
     
 }
 
+//Register a "key down" event
+void KeyReport_addKeyDownEvent(USB_KEYBOARD_REPORT_DATA_t* keyReport, uint8_t mod, uint8_t key)
+{
+    uint8_t index = KeyReport_getKeyIndex(keyReport, key);
+    
+    if (index == UINT8_MAX)
+    {
+        //Not in array - do we have space?
+        
+        index = KeyReport_getKeyIndex(keyReport, HID_KEY_NONE);
+        if (index == UINT8_MAX)
+        {
+            //No space in array!
+            return;
+        }
+    }
+    
+    (*keyReport).Modifier = mod;
+    (*keyReport).KeyCode[index] = key;
+}
+
 //Register a "key up" event for c
-void KeyReport_registerKeyUp(USB_KEYBOARD_REPORT_DATA_t* keyReport, char c)
+void KeyReport_clearKeyDownEventFromChar(USB_KEYBOARD_REPORT_DATA_t* keyReport, char c)
 {
     uint8_t key, mod;
     KeyReport_convertCharToCode(c, &key, &mod);
     
+    uint8_t index = KeyReport_getKeyIndex(keyReport, key);
+    
+    //Not in array
+    if (index == UINT8_MAX)
+    {
+        return;
+    }
+    
+    if (mod != HID_MODIFIER_NONE)
+    {
+        (*keyReport).Modifier = HID_MODIFIER_NONE;
+    }
+    (*keyReport).KeyCode[index] = HID_KEY_NONE;
+}
+
+//Clear the "key down" event
+void KeyReport_clearKeyDownEvent(USB_KEYBOARD_REPORT_DATA_t* keyReport, uint8_t mod, uint8_t key)
+{
     uint8_t index = KeyReport_getKeyIndex(keyReport, key);
     
     //Not in array

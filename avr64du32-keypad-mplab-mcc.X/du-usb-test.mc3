@@ -407,7 +407,7 @@
       </entry>
       <entry>
          <file>mcc_generated_files\usb\usb_descriptors.h</file>
-         <hash>a6d005859681421fe5c8637070bebdabdc44bd7be7af0d54f7490441303a1b7a</hash>
+         <hash>641d87ceb78fb3b9747186e5744723fd75e8cfbe5fa7d45de62042ed824d9a57</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\usb\usb_device.c</file>
