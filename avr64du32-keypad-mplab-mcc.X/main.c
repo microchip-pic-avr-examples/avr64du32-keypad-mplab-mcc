@@ -64,6 +64,9 @@ typedef enum {
 #define UNDO_BUTTON_INDEX BUTTON3_INDEX
 #define CUT_BUTTON_INDEX BUTTON4_INDEX
 
+//If set, the external button is NC, not NO
+//#define EXTERNAL_BUTTON_NC
+
 //Should a key packet be sent?
 static volatile bool shouldSendKeyEvent = false;
 
@@ -78,10 +81,19 @@ static volatile USB_KEYBOARD_REPORT_DATA_t keyReport;
 
 void onRTC_Overflow(void)
 {
+    //If VBUS is not present, reset state machine
+    if (!AC0_Read())
+    {
+        state = NOT_PRESSED;
+        return;
+    }
+
+    //State machine
     switch (state)
     {
         case NOT_PRESSED:
         {
+            
             //Assume a key was pressed (variable cleared if not pressed)
             shouldSendKeyEvent = true;
             
@@ -94,6 +106,16 @@ void onRTC_Overflow(void)
                 KeyReport_addKeyDownEventFromChar(&keyReport, ' ');
                 KeyReport_addKeyDownEventFromChar(&keyReport, 'D');
                 KeyReport_addKeyDownEventFromChar(&keyReport, 'U');
+            }
+            
+#ifndef EXTERNAL_BUTTON_NC
+            else if (!BUTTON_EXTERNAL_GetValue())
+#else
+            else if (BUTTON_EXTERNAL_GetValue()) 
+#endif
+            {
+                //External Button - Send ALT + F4
+                KeyReport_addKeyDownEvent(&keyReport, HID_MODIFIER_LEFT_ALT, HID_F4);
             }
             else if (BUTTON_1_GetValue())
             {
@@ -144,7 +166,14 @@ void onRTC_Overflow(void)
                     && (!BUTTON_3_GetValue()) && (!BUTTON_4_GetValue())
                     && (!SW0_GetValue()))
             {
-                state = NOT_PRESSED;
+#ifdef EXTERNAL_BUTTON_NC
+                if (!BUTTON_EXTERNAL_GetValue())
+#else
+                if (BUTTON_EXTERNAL_GetValue())
+#endif
+                {
+                    state = NOT_PRESSED;
+                }
             }
             break;
         }

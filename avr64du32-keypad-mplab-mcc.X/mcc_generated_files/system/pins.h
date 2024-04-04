@@ -133,6 +133,25 @@
 #define BUTTON_4_EnableInterruptForLowLevelSensing() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PD2_SetInterruptHandler BUTTON_4_SetInterruptHandler
 
+//get/set BUTTON_EXTERNAL aliases
+#define BUTTON_EXTERNAL_SetHigh() do { PORTD_OUTSET = 0x10; } while(0)
+#define BUTTON_EXTERNAL_SetLow() do { PORTD_OUTCLR = 0x10; } while(0)
+#define BUTTON_EXTERNAL_Toggle() do { PORTD_OUTTGL = 0x10; } while(0)
+#define BUTTON_EXTERNAL_GetValue() (VPORTD.IN & (0x1 << 4))
+#define BUTTON_EXTERNAL_SetDigitalInput() do { PORTD_DIRCLR = 0x10; } while(0)
+#define BUTTON_EXTERNAL_SetDigitalOutput() do { PORTD_DIRSET = 0x10; } while(0)
+#define BUTTON_EXTERNAL_SetPullUp() do { PORTD_PIN4CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define BUTTON_EXTERNAL_ResetPullUp() do { PORTD_PIN4CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define BUTTON_EXTERNAL_SetInverted() do { PORTD_PIN4CTRL  |= PORT_INVEN_bm; } while(0)
+#define BUTTON_EXTERNAL_ResetInverted() do { PORTD_PIN4CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define BUTTON_EXTERNAL_DisableInterruptOnChange() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define BUTTON_EXTERNAL_EnableInterruptForBothEdges() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define BUTTON_EXTERNAL_EnableInterruptForRisingEdge() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define BUTTON_EXTERNAL_EnableInterruptForFallingEdge() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define BUTTON_EXTERNAL_DisableDigitalInputBuffer() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define BUTTON_EXTERNAL_EnableInterruptForLowLevelSensing() do { PORTD.PIN4CTRL = (PORTD.PIN4CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PD4_SetInterruptHandler BUTTON_EXTERNAL_SetInterruptHandler
+
 //get/set BUTTON_1 aliases
 #define BUTTON_1_SetHigh() do { PORTD_OUTSET = 0x20; } while(0)
 #define BUTTON_1_SetLow() do { PORTD_OUTCLR = 0x20; } while(0)
@@ -340,6 +359,27 @@ void BUTTON_4_DefaultInterruptHandler(void);
  * @return none
  */
 void BUTTON_4_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for BUTTON_EXTERNAL pin. 
+ *        This is a predefined interrupt handler to be used together with the BUTTON_EXTERNAL_SetInterruptHandler() method.
+ *        This handler is called every time the BUTTON_EXTERNAL ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void BUTTON_EXTERNAL_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for BUTTON_EXTERNAL pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for BUTTON_EXTERNAL at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void BUTTON_EXTERNAL_SetInterruptHandler(void (* interruptHandler)(void)) ; 
 
 /**
  * @ingroup  pinsdriver

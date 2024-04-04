@@ -39,6 +39,7 @@ static void (*IO_PD6_InterruptHandler)(void);
 static void (*VBUS_DETECT_InterruptHandler)(void);
 static void (*BUTTON_3_InterruptHandler)(void);
 static void (*BUTTON_4_InterruptHandler)(void);
+static void (*BUTTON_EXTERNAL_InterruptHandler)(void);
 static void (*BUTTON_1_InterruptHandler)(void);
 static void (*BUTTON_2_InterruptHandler)(void);
 static void (*INT_BUTTON_InterruptHandler)(void);
@@ -81,7 +82,7 @@ void PIN_MANAGER_Initialize()
     PORTD.PIN1CTRL = 0x0;
     PORTD.PIN2CTRL = 0x0;
     PORTD.PIN3CTRL = 0x0;
-    PORTD.PIN4CTRL = 0x0;
+    PORTD.PIN4CTRL = 0x8;
     PORTD.PIN5CTRL = 0x0;
     PORTD.PIN6CTRL = 0x0;
     PORTD.PIN7CTRL = 0x0;
@@ -109,6 +110,7 @@ void PIN_MANAGER_Initialize()
     VBUS_DETECT_SetInterruptHandler(VBUS_DETECT_DefaultInterruptHandler);
     BUTTON_3_SetInterruptHandler(BUTTON_3_DefaultInterruptHandler);
     BUTTON_4_SetInterruptHandler(BUTTON_4_DefaultInterruptHandler);
+    BUTTON_EXTERNAL_SetInterruptHandler(BUTTON_EXTERNAL_DefaultInterruptHandler);
     BUTTON_1_SetInterruptHandler(BUTTON_1_DefaultInterruptHandler);
     BUTTON_2_SetInterruptHandler(BUTTON_2_DefaultInterruptHandler);
     INT_BUTTON_SetInterruptHandler(INT_BUTTON_DefaultInterruptHandler);
@@ -180,6 +182,19 @@ void BUTTON_4_DefaultInterruptHandler(void)
 {
     // add your BUTTON_4 interrupt custom code
     // or set custom function using BUTTON_4_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for BUTTON_EXTERNAL at application runtime
+*/
+void BUTTON_EXTERNAL_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    BUTTON_EXTERNAL_InterruptHandler = interruptHandler;
+}
+
+void BUTTON_EXTERNAL_DefaultInterruptHandler(void)
+{
+    // add your BUTTON_EXTERNAL interrupt custom code
+    // or set custom function using BUTTON_EXTERNAL_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for BUTTON_1 at application runtime
@@ -282,6 +297,10 @@ ISR(PORTD_PORT_vect)
     if(VPORTD.INTFLAGS & PORT_INT2_bm)
     {
        BUTTON_4_InterruptHandler(); 
+    }
+    if(VPORTD.INTFLAGS & PORT_INT4_bm)
+    {
+       BUTTON_EXTERNAL_InterruptHandler(); 
     }
     if(VPORTD.INTFLAGS & PORT_INT5_bm)
     {
