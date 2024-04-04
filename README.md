@@ -4,7 +4,7 @@
 
 # USB Keypad with AVR64DU32 
 
-This example shows how to use the USB Stack Library inside of MPLAB&reg; Code Configurator (MCC) to implement a simple USB Keypad. The AVR64DU32 family of microcontrollers contain a configurable Full Speed (FS) USB 2.0 transceiver.  
+This example shows how to use the USB Stack Library inside of MPLAB&reg; Code Configurator (MCC) to implement a simple USB Keypad. The AVR64DU32 family of microcontrollers (MCUs) contain a configurable Full Speed (FS) USB 2.0 transceiver.  
 
 ## Related Documentation
 
@@ -26,12 +26,12 @@ This example shows how to use the USB Stack Library inside of MPLAB&reg; Code Co
 ## Hardware Used
 
 - [AVR64DU32 Curiosity Nano (EV59F82A)](https://www.microchip.com/en-us/development-tool/EV59F82A?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-DU&utm_content=avr64du32-keypad-mplab-mcc-github&utm_bu=MCU08)
-- [Curiosity Nano Base for Clicks&trade; (AC164162)](https://www.microchip.com/en-us/development-tool/AC164162?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-DU&utm_content=avr64du32-keypad-mplab-mcc-github&utm_bu=MCU08)
+- [Curiosity Nano Base for Click&trade; Boards (AC164162)](https://www.microchip.com/en-us/development-tool/AC164162?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-DU&utm_content=avr64du32-keypad-mplab-mcc-github&utm_bu=MCU08)
 - [2x2 Click (MIKROE-2152)](https://www.mikroe.com/2x2-key-click)
 
 ## Setup
 
-With the power off, plug in the 2x2 Click into Slot 1. Place the AVR64DU32 Curiosity Nano into the slot, with the programmer USB on the left edge, as shown in the image below.  
+With the power off, plug in the 2x2 Click into Slot 1. Place the AVR64DU32 Curiosity Nano into the slot with the programmer USB on the left edge, as shown in the image below.  
 
 ![Image of the Click Boards](./images/boardSetup.JPG)  
 
@@ -47,7 +47,7 @@ With the power off, plug in the 2x2 Click into Slot 1. Place the AVR64DU32 Curio
 | Pin | Function 
 | --- | -------
 | PA7 | Button 3
-| PC3 | VBUS Detect
+| PC3 | V<sub>BUS</sub> Detect
 | PD2 | Button 4
 | PD5 | Button 1
 | PD6 | UART TX
@@ -57,7 +57,7 @@ With the power off, plug in the 2x2 Click into Slot 1. Place the AVR64DU32 Curio
 | PF5 | Interrupt (Reserved)
 | PF6 | SW0 (on Curiosity Nano)
 
-**Note**: Reserved pins are physically in use, but not used in the actual application.  
+**Note**: Reserved pins are physically in use, but not used in the application.  
 
 ### USB Configuration  
 
@@ -69,19 +69,19 @@ Endpoints: CONTROL and IN
 
 ### USB Detection
 
-On Power-on-Reset (POR), the system initializes the peripherals and sets the application state to `APPLICATION_USB_NOT_INIT`. The program polls the Analog Comparator (AC) and monitors the voltage on VBUS through a voltage divider on the Curiosity Nano. When VBUS is detected, the USB initialization sequence is triggered.  
+On Power-on-Reset (POR), the system initializes the peripherals and sets the application state to `APPLICATION_USB_NOT_INIT`. The program polls the Analog Comparator (AC) and monitors the voltage on V<sub>BUS</sub> through a voltage divider on the Curiosity Nano. When V<sub>BUS</sub> is detected, the USB initialization sequence is triggered.  
 
 ### USB Initialization
 
-Once VBUS is detected, the Nano can start the USB transceiver by calling the function `USB_Start`. If it is successful, the application transitions into the `APPLICATION_USB_INIT` state. If this fails `USB_INIT_RETRIES` times, the application moves to the `APPLICATION_USB_ERROR` state and remains there until the cable is unplugged.  
+Once V<sub>BUS</sub> is detected, the Nano can start the USB transceiver by calling the function `USB_Start`. If successful, the application transitions into the `APPLICATION_USB_INIT` state. If this fails `USB_INIT_RETRIES` times, the application moves to the `APPLICATION_USB_ERROR` state until the cable is unplugged.  
 
 ### USB Polling and Management
 
-In the `APPLICATION_USB_INIT` state, events from the USB host are handled by calling the function `USBDevice_Handle`. If data is to be sent from the MCU to the Host, the function `USB_HIDKeyboardReportInSend` is used to queue a data report.  
+In the `APPLICATION_USB_INIT` state, events from the USB host are handled by calling the function `USBDevice_Handle`. If data is to be sent from the MCU to the Host, the function `USB_HIDKeyboardReportInSend` queues a data report.  
 
 ### Key Handling
 
-A simple state machine is called every 5 ms to handle key presses in this application. The 5 ms delay is used to debounce the SW0 input. 
+A simple state machine is called every 5 ms to handle key presses in this application. The 5 ms delay debounces the SW0 input. 
 
 - On POR, the state machine starts in the `NOT_PRESSED` state. Every 5 ms, the buttons are polled to see if they are pressed. If a button is pressed, key down event(s) are loaded into a report and queued for send. The key press state machine advances to the `PRESSED` state. 
 
