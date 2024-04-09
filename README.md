@@ -9,6 +9,7 @@ This example shows how to use the USB Stack Library inside of MPLAB&reg; Code Co
 ## Related Documentation
 
 - [AVR64DU32 Product Page](https://www.microchip.com/en-us/product/AVR64DU32?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-DU&utm_content=avr64du32-keypad-mplab-mcc-github&utm_bu=MCU08)
+- [AVR&reg; DU Family Page](https://www.microchip.com/en-us/products/microcontrollers-and-microprocessors/8-bit-mcus/avr-mcus/avr-du?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-DU&utm_content=avr64du32-keypad-mplab-mcc-github&utm_bu=MCU08)
 
 ### USB Specifications
 
