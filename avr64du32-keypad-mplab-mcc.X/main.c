@@ -195,74 +195,46 @@ void onRTC_Overflow(void)
 void handleUSBReport(uint16_t report)
 {
     printf("%x\r\n", report);
-    uint8_t reportType = (report >> 8);
-    
-    switch (reportType)
+
+    //If there is no output endpoint, CAPS LOCK/SCROLL LOCK/NUM LOCK/COMPOSE/KANA are reported here
+
+    //[7:5] Constants
+    //[4] Kana
+    //[3] Compose
+    //[2] Scroll Lock
+    //[1] Caps Lock
+    //[0] Num Lock
+
+    LED0_SetLow();
+
+    uint8_t keyMap = report & 0xFF;
+
+    if (keyMap & USB_NUM_LOCK_bm)
     {
-        case 0:
-        {
-            //Report ID not set
-            //If there is no output endpoint, CAPS LOCK/SCROLL LOCK/NUM LOCK/COMPOSE/KANA are reported here
-            
-            //[7:5] Constants
-            //[4] Kana
-            //[3] Compose
-            //[2] Scroll Lock
-            //[1] Caps Lock
-            //[0] Num Lock
-            
-            LED0_SetLow();
-            
-            uint8_t keyMap = report & 0xFF;
-            
-            if (keyMap & USB_NUM_LOCK_bm)
-            {
-                //Num Lock
-            }
-            
-            if (keyMap & USB_CAPS_LOCK_bm)
-            {
-                //Caps Lock
-                LED0_SetHigh();
-            }
-            
-            if (keyMap & USB_SCROLL_LOCK_bm)
-            {
-                //Scroll Lock
-            }
-            
-            if (keyMap & USB_COMPOSE_bm)
-            {
-                //Compose
-            }
-            
-            if (keyMap & USB_KANA_bm)
-            {
-                //Kana
-            }
-            
-            break;
-        }
-        case 1:
-        {
-            //Input
-            break;
-        }
-        case 2:
-        {
-            //Output
-            break;
-        }
-        case 3:
-        {
-            //Feature
-            break;
-        }
-        default:
-        {
-            
-        }
+        //Num Lock
     }
+
+    if (keyMap & USB_CAPS_LOCK_bm)
+    {
+        //Caps Lock
+        LED0_SetHigh();
+    }
+
+    if (keyMap & USB_SCROLL_LOCK_bm)
+    {
+        //Scroll Lock
+    }
+
+    if (keyMap & USB_COMPOSE_bm)
+    {
+        //Compose
+    }
+
+    if (keyMap & USB_KANA_bm)
+    {
+        //Kana
+    }
+    
 
 }
 

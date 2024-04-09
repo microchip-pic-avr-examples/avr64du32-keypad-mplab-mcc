@@ -85,7 +85,7 @@
                    displayName="Important Files"
                    projectFiles="true">
       <itemPath>Makefile</itemPath>
-      <itemPath>du-usb-test.mc3</itemPath>
+      <itemPath>avr64du32-keypad-mplab-mcc.mc3</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
