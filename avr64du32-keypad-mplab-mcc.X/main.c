@@ -234,8 +234,6 @@ void handleUSBReport(uint16_t report)
     {
         //Kana
     }
-    
-
 }
 
 int main(void)

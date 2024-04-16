@@ -4,7 +4,7 @@
 
 # USB Keypad with AVR64DU32 
 
-This example shows how to use the USB Stack Library inside of MPLAB&reg; Code Configurator (MCC) to implement a simple USB Keypad. The AVR64DU32 family of microcontrollers (MCUs) contain a configurable Full Speed (FS) USB 2.0 transceiver. 
+This example shows an implementation of the USB Stack Library inside of MPLAB&reg; Code Configurator (MCC) to implement a simple USB Keypad. The AVR64DU32 family of microcontrollers (MCUs) contain a configurable Full Speed (FS) USB 2.0 transceiver. 
 
 ## Related Documentation
 
@@ -28,8 +28,9 @@ This example shows how to use the USB Stack Library inside of MPLAB&reg; Code Co
 
 - [AVR64DU32 Curiosity Nano (EV59F82A)](https://www.microchip.com/en-us/development-tool/EV59F82A?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-DU&utm_content=avr64du32-keypad-mplab-mcc-github&utm_bu=MCU08)
 - [Curiosity Nano Base for Click&trade; Boards (AC164162)](https://www.microchip.com/en-us/development-tool/AC164162?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-DU&utm_content=avr64du32-keypad-mplab-mcc-github&utm_bu=MCU08)
-- [2x2 Click (MIKROE-2152)](https://www.mikroe.com/2x2-key-click)
+- [2x2 Click (MIKROE-2152)](https://www.mikroe.com/2x2-key-click)  
 - External Button (optional)
+    - If not attached, the program will continue to function.
 
 ## Setup
 
@@ -103,7 +104,7 @@ The buttons of the 2x2 Click perform the following actions:
 | 3 | CTRL + Z | Undo
 | 4 | CTRL + X | Cut
 | SW0 | "AVR DU" | Prints the string "AVR DU"
-| External Button | ALT + F4 | Closes the running program
+| External Button (*Optional*) | ALT + F4 | Closes the running program
 
 **Note 1**: SW0 is located on the Curiosity Nano.
 
@@ -112,4 +113,4 @@ The buttons of the 2x2 Click perform the following actions:
 **Note 3**: The 2x2 Click debouncing causes the buttons to be held for an extra ~0.5s. The code is designed with a one-shot to prevent this from causing issues, however quickly switching buttons or tapping is not possible.
 
 ## Summary
-This example has shown the AVR64DU32 family of MCUs as a USB Keypad.  
+This example has shown how to implement the USB Stack Libray on the AVR64DU32 family of MCUs as a USB Keypad.  
