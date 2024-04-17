@@ -38,10 +38,16 @@ With the power off, plug in the 2x2 Click into Slot 1. Place the AVR64DU32 Curio
 
 ![Image of the Click Boards](./images/boardSetup.JPG)  
 
+If the optional button is attached, the button is connected between AN2 (PD4) and GND. This button can be a latching push button (as shown below), or a standard push button. 
+
+**Note**: if using a Normally Closed (NC) button, define `EXTERNAL_BUTTON_NC` macro in `main.c`. If the button is not used, this macro should not be defined.  
+
+![Image of the Click Boards with External Button](./images/boardSetupWithButton.jpg)
+
 ### UART Settings (Debug)
 
 - Baud Rate: 9600
-- Char Length: 8-bits
+- Char Length: 8 bits
 - Parity: None
 - Stop Bits: 1 bit
 
@@ -85,13 +91,13 @@ In the `APPLICATION_USB_INIT` state, events from the USB host are handled by cal
 
 ### Key Handling
 
-A simple state machine is called every 5 ms to handle key presses in this application. The 5 ms delay debounces the SW0 input. 
+Independent of the USB state, a simple keypress state machine is called every 5 ms to handle key presses in this application. The 5 ms delay debounces the SW0 input. If the V<sub>USB</sub> is not detected, the state machine is set to the `NOT_PRESSED` state, and no other actions are taken. However, if V<sub>USB</sub> is detected, then the following occurs:
 
 - On POR, the state machine starts in the `NOT_PRESSED` state. Every 5 ms, the buttons are polled to see if they are pressed. If a button is pressed, key down event(s) are loaded into a report and queued for send. The key press state machine advances to the `PRESSED` state. 
 
 - In the `PRESSED` state, the application clears the key down events and queues the now empty report for send. This is required, as the computer will assume the button is pressed until told otherwise. The state machine advances to the `HELD_WAIT` state after queueing the data. 
 
-- The application waits in `HELD_WAIT` state until all of the keys are released. Once the keys are all released, the state machine returns to the `NOT_PRESSED` state.
+- The application waits in the `HELD_WAIT` state until all of the keys are released. Once the keys are all released, the state machine returns to the `NOT_PRESSED` state.
 
 ## Operation
 
